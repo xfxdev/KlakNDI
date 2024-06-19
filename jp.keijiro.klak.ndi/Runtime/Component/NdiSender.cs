@@ -12,7 +12,7 @@ public sealed partial class NdiSender : MonoBehaviour
     ReadbackPool _pool;
     FormatConverter _converter;
     System.Action<AsyncGPUReadbackRequest> _onReadback;
-    private float _lastSentTime;
+    private float _accumTime;
 
 
     void PrepareSenderObjects()
@@ -77,12 +77,13 @@ public sealed partial class NdiSender : MonoBehaviour
 
             if (ndiFPS > 0)
             {
-                float interval = 1 / ndiFPS;
-                if (Time.unscaledTime - _lastSentTime < interval)
+                float interval = 1f / ndiFPS;
+                _accumTime += Time.unscaledDeltaTime;
+                if (_accumTime < interval)
                 {
                     continue;
                 }
-                _lastSentTime = Time.unscaledTime;
+                _accumTime -= interval;
             }
 
             PrepareSenderObjects();
@@ -131,12 +132,13 @@ public sealed partial class NdiSender : MonoBehaviour
 
         if (ndiFPS > 0)
         {
-            float interval = 1 / ndiFPS;
-            if (Time.unscaledTime - _lastSentTime < interval)
+            float interval = 1f / ndiFPS;
+            _accumTime += Time.unscaledDeltaTime;
+            if (_accumTime < interval)
             {
                 return;
             }
-            _lastSentTime = Time.unscaledTime;
+            _accumTime -= interval;
         }
 
         PrepareSenderObjects();
@@ -203,7 +205,7 @@ public sealed partial class NdiSender : MonoBehaviour
     // Component state reset without NDI object disposal
     internal void ResetState(bool willBeActive)
     {
-        _lastSentTime = 0f;
+        _accumTime = 0f;
 
         // Camera capture coroutine termination
         // We use this to kill only a single coroutine. It may sound like
