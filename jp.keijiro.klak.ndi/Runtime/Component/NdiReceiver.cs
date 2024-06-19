@@ -89,6 +89,8 @@ public sealed partial class NdiReceiver : MonoBehaviour
 
         // External texture update
         if (targetTexture != null) Graphics.Blit(rt, targetTexture);
+
+        OnReceiveVideoFrame?.Invoke(rt);
     }
 
     #endregion

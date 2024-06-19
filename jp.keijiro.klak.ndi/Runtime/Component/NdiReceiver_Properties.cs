@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Klak.Ndi {
@@ -51,6 +52,8 @@ public sealed partial class NdiReceiver : MonoBehaviour
     public string metadata { get; set; }
 
     public Interop.Recv internalRecvObject => _recv;
+
+    public event Action<RenderTexture> OnReceiveVideoFrame;
 
     #endregion
 
